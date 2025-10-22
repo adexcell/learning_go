@@ -29,6 +29,7 @@ func main() {
 		}
 	}(intChan)
 
+
 	// №1. Выход из горутины по условию. Условие - если читаемое из канала значение четное,
 	//  горутина прекращает свою работу.
 	// for i := 0; i <= 10; i++ {
@@ -44,6 +45,7 @@ func main() {
 	// 	}(i, intChan, wg)
 	// 	time.Sleep(150 * time.Millisecond)
 	// }
+
 
 	// №2. Выход из горутины через канал уведомления.
 	// stop := make(chan struct{})
@@ -66,6 +68,7 @@ func main() {
 	// time.Sleep(time.Millisecond * 100)
 	// close(stop)
 
+
 	// №3. Выход из горутины c помощью контекста.
 	// №3.1 context.WithCancel - программа ожидает сигнала отмены из консоли (CTRL + C)
 
@@ -86,6 +89,7 @@ func main() {
 	// 	time.Sleep(150 * time.Millisecond)
 	// }
 
+
 	// №3.2 context.WithTimeout - горутины завершатся спустя заданное время,
 	// программа ожидает сигнала отмены из консоли (CTRL + C)
 	// ctx, cancel := context.WithTimeout(context.Background(), time.Second * 3)
@@ -104,6 +108,7 @@ func main() {
 	// 	}(ctx, i, intChan, wg)
 	// 	time.Sleep(150 * time.Millisecond)
 	// }
+
 
 	// №3.3 context.WithDeadline - горутины завершатся когда наступит deadline,
 	// программа ожидает сигнала отмены из консоли (CTRL + C)
@@ -124,6 +129,7 @@ func main() {
 	// 	}(ctx, i, intChan, wg)
 	// 	time.Sleep(150 * time.Millisecond)
 	// }
+
 
 	// №4 прекращение работы горутины runtime.Goexit()
 	// ctx, cancel := context.WithCancel(context.Background())
@@ -171,6 +177,7 @@ func main() {
 	// 	time.Sleep(150 * time.Millisecond)
 	// }
 
+	
 	// №6 log.Fatalf, log.Fatal - они тоже не останавливают конкретную горутину,
 	// а останавливают всю программу целиком
 	// ctx, cancel := context.WithCancel(context.Background())
