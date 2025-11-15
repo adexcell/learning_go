@@ -10,7 +10,6 @@ import (
 	"strings"
 )
 
-// SortConfig содержит настройки сортировки.
 type SortConfig struct {
 	column     int
 	numeric    bool
@@ -23,12 +22,11 @@ type SortConfig struct {
 	filename   string
 }
 
-// parseArgs разбирает аргументы и комбинированные флаги (например -nrh).
 func parseArgs() SortConfig {
 	cfg := SortConfig{}
 
 	flag.IntVar(&cfg.column, "k", 1, "sort by column number (default 1)")
-	flag.BoolVar(&cfg.numeric, "n", false, "numeric sort")
+	flag.BoolVar(&cfg.numeric, "n", false, "numeruc sort")
 	flag.BoolVar(&cfg.reverse, "r", false, "reverse order")
 	flag.BoolVar(&cfg.unique, "u", false, "unique lines")
 	flag.BoolVar(&cfg.check, "c", false, "check if sorted")
@@ -37,7 +35,6 @@ func parseArgs() SortConfig {
 	flag.BoolVar(&cfg.human, "h", false, "human-readable numeric sort (1K, 2M)")
 	flag.Parse()
 
-	// Дополнительная обработка коротких комбинированных флагов
 	for _, arg := range os.Args[1:] {
 		if len(arg) > 2 && strings.HasPrefix(arg, "-") {
 			for _, c := range arg[1:] {
@@ -68,8 +65,7 @@ func parseArgs() SortConfig {
 	return cfg
 }
 
-// readLines считывает строки из файла или stdin.
-func readLines(filename string) ([]string, error) {
+func readlines(filename string) ([]string, error) {
 	var scanner *bufio.Scanner
 	if filename != "" {
 		f, err := os.Open(filename)
@@ -86,10 +82,10 @@ func readLines(filename string) ([]string, error) {
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
+
 	return lines, scanner.Err()
 }
 
-// getColumn возвращает N-й столбец (по табуляции).
 func getColumn(line string, col int) string {
 	fields := strings.Split(line, "\t")
 	if col <= len(fields) {
@@ -98,8 +94,7 @@ func getColumn(line string, col int) string {
 	return line
 }
 
-// parseHumanNumber парсит числа с суффиксами (K, M, G).
-func parseHumanNumber(s string) float64 {
+func parsHumanNumber(s string) float64 {
 	if s == "" {
 		return 0
 	}
@@ -121,14 +116,12 @@ func parseHumanNumber(s string) float64 {
 	return v * mult
 }
 
-// monthMap помогает сортировать по названиям месяцев.
 var monthMap = map[string]int{
 	"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4,
 	"May": 5, "Jun": 6, "Jul": 7, "Aug": 8,
 	"Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12,
 }
 
-// lessFunc выполняет сравнение строк с учётом всех флагов.
 func lessFunc(a, b string, cfg SortConfig) bool {
 	ka := getColumn(a, cfg.column)
 	kb := getColumn(b, cfg.column)
@@ -153,7 +146,7 @@ func lessFunc(a, b string, cfg SortConfig) bool {
 		less = monthMap[ka] < monthMap[kb]
 
 	case cfg.human:
-		less = parseHumanNumber(ka) < parseHumanNumber(kb)
+		less = parsHumanNumber(ka) < parsHumanNumber(kb)
 
 	default:
 		less = ka < kb
@@ -165,7 +158,6 @@ func lessFunc(a, b string, cfg SortConfig) bool {
 	return less
 }
 
-// checkSorted проверяет, отсортированы ли данные (-c).
 func checkSorted(lines []string, cfg SortConfig) bool {
 	for i := 1; i < len(lines); i++ {
 		if lessFunc(lines[i], lines[i-1], cfg) {
@@ -175,7 +167,6 @@ func checkSorted(lines []string, cfg SortConfig) bool {
 	return true
 }
 
-// uniqueLines убирает дубликаты (-u).
 func uniqueLines(lines []string) []string {
 	if len(lines) == 0 {
 		return lines
@@ -192,7 +183,7 @@ func uniqueLines(lines []string) []string {
 func main() {
 	cfg := parseArgs()
 
-	lines, err := readLines(cfg.filename)
+	lines, err := readlines(cfg.filename)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
